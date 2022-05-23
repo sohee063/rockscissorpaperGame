@@ -1,13 +1,6 @@
-import { useState } from 'react';
-import './App.css';
+import React, { Component } from 'react';
 import Box from './component/Box';
-
-// 1. box 두 개 생성.
-// 2. 각 box 에 user 와 computer 적용
-// 3. 가위바위보 버튼 3개
-// 4. 가위바위보 버튼을 클릭하면 클릭한 값(이미지, 결과창)이 박스에 보임
-// 5. 컴퓨터는 랜덤으로 선택.
-// 6. 승패 결과에 따라 테두리 색이 바뀐다.
+import './App.css';
 
 const choice = {
   cut: {
@@ -24,19 +17,32 @@ const choice = {
   },
 };
 
-function App() {
-  const [useSelect, setUserSelect] = useState('null');
-  const [comSelect, setComSelect] = useState('null');
-  const [resultSelect, setResultSelect] = useState('');
+export default class AppClass extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      useSelect: null,
+      comSelect: null,
+      resultSelect: '',
+    };
+  }
 
-  const play = (userChoice) => {
-    let ComChoice = createRandom();
-    setUserSelect(choice[userChoice]);
-    setComSelect(choice[ComChoice]);
-    setResultSelect(comPare(choice[userChoice], choice[ComChoice]));
+  play = (userChoice) => {
+    let ComChoice = this.createRandom();
+    this.setState({
+      useSelect: choice[userChoice],
+      comSelect: choice[ComChoice],
+      resultSelect: this.comPare(choice[userChoice], choice[ComChoice]),
+    });
   };
 
-  const comPare = (user, com) => {
+  createRandom = () => {
+    let choiceArr = Object.keys(choice);
+    let random = Math.floor(Math.random() * choiceArr.length);
+    return choiceArr[random];
+  };
+
+  comPare = (user, com) => {
     if (user.name === com.name) {
       return 'TIE';
     } else if (user.name === 'Cut') return com.name === 'Rock' ? 'LOSE' : 'WIN';
@@ -44,25 +50,27 @@ function App() {
     else if (user.name === 'Rock') return com.name === 'Paper' ? 'LOSE' : 'WIN';
   };
 
-  const createRandom = () => {
-    let choiceArr = Object.keys(choice);
-    let random = Math.floor(Math.random() * choiceArr.length);
-    return choiceArr[random];
-  };
-
-  return (
-    <div className="main">
-      <section className="box-area">
-        <Box title="소희" item={useSelect} result={resultSelect} />
-        <Box title="상대방" item={comSelect} result={resultSelect} />
-      </section>
-      <section className="button-area">
-        <button onClick={() => play('cut')}>가위</button>
-        <button onClick={() => play('rock')}>바위</button>
-        <button onClick={() => play('paper')}>보</button>
-      </section>
-    </div>
-  );
+  render() {
+    return (
+      <div className="main">
+        <section className="box-area">
+          <Box
+            title="소희"
+            item={this.state.useSelect}
+            result={this.state.resultSelect}
+          />
+          <Box
+            title="상대방"
+            item={this.state.comSelect}
+            result={this.state.resultSelect}
+          />
+        </section>
+        <section className="button-area">
+          <button onClick={() => this.play('cut')}>가위</button>
+          <button onClick={() => this.play('rock')}>바위</button>
+          <button onClick={() => this.play('paper')}>보</button>
+        </section>
+      </div>
+    );
+  }
 }
-
-export default App;
